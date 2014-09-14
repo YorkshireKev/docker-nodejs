@@ -3,6 +3,10 @@ Node.js Docker Base Image
 
 This is a simple node.js image that is intended to be used as the base image for creating application specific images.
 
+You don't need to build this base image yourself, you can pull a pre-built image from docker hub by typing: docker pull yorkshirekev/nodejs
+
+To build an application specific image from this one:
+
 -  Create a subdirectory called nodeapp and copy your node application code into it.
 -  When you build your image based on this image the contents of the nodeapp folder are copied into the new image and npm install is executed.
 -  When a container is run from your new images, node app.js is executed.
