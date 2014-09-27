@@ -1,24 +1,20 @@
-Node.js Docker Base Image
-======================
+Node.js Docker Image
+====================
 
-This is a simple node.js image that is intended to be used as the base image for creating application specific images.
+This is a simple node.js image that is intended to be used run a single node.js application, named app.js, from a mapped host volume folder.
+
+The idea is that you can update your node.js app and simply restart the docker container to load the new version.
 
 You don't need to build this base image yourself, you can pull a pre-built image from docker hub by typing: docker pull yorkshirekev/nodejs
 
-To build an application specific image from this one:
+If you want to have the container pull any dependant npm modules (rather than package them with your app), then you can simply run the image and override the node command to run npm install like so:
+`docker run -it --rm --user 1000:1000 -v /path/to/your/node/app/folder:/nodeapp yorkshirekev/nodejs npm install`
 
--  Create a subdirectory called nodeapp and copy your node application code into it.
--  When you build your image based on this image the contents of the nodeapp folder are copied into the new image and npm install is executed.
--  When a container is run from your new images, node app.js is executed.
+Run your app:
+`docker run -d --user 1000:1000 -v /path/to/your/node/app/folder:/nodeapp -p 8080:8080 --name nodeapp yorkshirekev/nodejs`
 
-Folder structure for new images build:
+Two ports are exposed in the image; 8080 and 8443. These are intended to be used for http and https respectively (i.e. map them to 80 and 443 if exposing to the internet).
 
-/Dockerfile/nodeapp/<your app files>
+The --user parameter is used to ensure that the docker container can access the files mounted from your host folder. Set these to the user:group as used on your docker host. The UID/GID numbers have to be used rather than the names because the names won't match anything inside the container. 1000:1000 is user:group. Use the `id` command to determine your UID and GID numbers.
 
-Example dockerfile:
 
-    FROM educateme/nodejs
-    MAINTAINER Your name
-    ENV LAST_MODIFIED "2014-09-06 You"
-    
-    VOLUME /nodeapp/optional-folder-you-want-as-a-volume

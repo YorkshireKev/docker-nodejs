@@ -1,7 +1,7 @@
 FROM ubuntu:14.04
 MAINTAINER Kevin Ellis
 
-ENV LAST_MODIFIED "2014-09-05 K Ellis"
+ENV LAST_MODIFIED "2014-09-24 K Ellis"
 
 # Install the tools needed to compile node.js from source
 RUN apt-get update
@@ -22,24 +22,17 @@ RUN make install
 WORKDIR /
 RUN rm /tmp/node-v0.10.31.tar.gz ; rm -rf /tmp/node-v0.10.31
 
-# Create a nodejs specific user and application directory
+# Create a nodejs specific user and application directories
 RUN groupadd nodejs -g 6633
 RUN useradd nodejs -u 6633 -g nodejs
+RUN mkdir /nodework; chmod 777 /nodework
 RUN mkdir /nodeapp
 WORKDIR /nodeapp
-
-# Copy in  the default 'instructions' node app
-ADD app.js /nodeapp/app.js
-
-# When this image is used as the base for an appliction specific image, so
-# icopy the target app into the image and run npm install.
-ONBUILD USER root
-ONBUILD ADD nodeapp/ /nodeapp
-ONBUILD RUN /usr/local/bin/npm install
 
 #Expose ports. 8080 is intednded for http and 8443 is intended for https
 EXPOSE 8080
 EXPOSE 8443
 
+ENV HOME /nodework
 USER nodejs
 CMD ["/usr/local/bin/node", "app.js"]
